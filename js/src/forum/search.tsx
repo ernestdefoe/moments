@@ -29,7 +29,11 @@ class MomentsSearchSource {
 
   async search(query: string, limit: number) {
     query = query.toLowerCase();
-    const res: any = await app.request({ method: 'GET', url: `${app.forum.attribute('apiUrl')}/moments`, params: { filter: { q: query }, page: { limit } } });
+    const res: any = await app.request({
+      method: 'GET',
+      url: `${app.forum.attribute('apiUrl')}/moments`,
+      params: { filter: { q: query }, page: { limit } },
+    });
     const names: Record<string, string> = {};
     (res.included || []).forEach((u: any) => (names[u.id] = u.attributes.displayName));
     const parser = new DOMParser();
