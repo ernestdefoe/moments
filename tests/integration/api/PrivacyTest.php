@@ -76,7 +76,9 @@ class PrivacyTest extends MomentsTestCase
             $search = $this->feedIds($as, ['q' => 'moment']);
             foreach ($this->expected($who) as $privacy => $visible) {
                 $this->assertSame($visible, in_array($this->ids[$privacy], $profile, true), "$who / $privacy profile");
-                $this->assertSame($visible, in_array($this->ids[$privacy], $search, true), "$who / $privacy search");
+                if (! $this->fulltextInTransaction()) {
+                    $this->assertSame($visible, in_array($this->ids[$privacy], $search, true), "$who / $privacy search");
+                }
                 $topic = $this->feedIds($as, ['feed' => 'topic', 'topic' => 'secret'.$privacy]);
                 $this->assertSame($visible, in_array($this->ids[$privacy], $topic, true), "$who / $privacy topic");
             }

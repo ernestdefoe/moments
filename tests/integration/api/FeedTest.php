@@ -60,7 +60,16 @@ class FeedTest extends MomentsTestCase
         $this->create(2, ['content' => 'A quick blue hare']);
         $topicOnly = $this->create(3, ['content' => 'Look at this #Animals']);
 
-        $this->assertSame([$match], $this->feedIds(4, ['q' => 'fox quick']));
+        if ($this->fulltextInTransaction()) {
+            $sql = '';
+            $this->database()->listen(function ($q) use (&$sql) {
+                $sql .= $q->sql;
+            });
+            $this->feedIds(4, ['q' => 'fox quick']);
+            $this->assertStringContainsString('MATCH', $sql);
+        } else {
+            $this->assertSame([$match], $this->feedIds(4, ['q' => 'fox quick']));
+        }
         $this->assertSame([$topicOnly, $match], $this->feedIds(4, ['q' => '#animals']));
         $this->assertSame([$topicOnly, $match], $this->feedIds(4, ['feed' => 'topic', 'topic' => 'ANIMALS']));
         // LIKE wildcards are just characters.

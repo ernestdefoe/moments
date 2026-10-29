@@ -84,6 +84,17 @@ abstract class MomentsTestCase extends TestCase
     }
 
     /**
+     * InnoDB's FULLTEXT index only sees committed rows, and every test runs
+     * inside a transaction that is rolled back, so on MySQL/MariaDB a word
+     * search in a test finds nothing. Search is asserted on the other
+     * databases; on these the query is checked to use the index.
+     */
+    protected function fulltextInTransaction(): bool
+    {
+        return in_array($this->database()->getDriverName(), ['mysql', 'mariadb'], true);
+    }
+
+    /**
      * Followers-only moments need flood control out of the way between posts.
      */
     protected function noFlood(): void

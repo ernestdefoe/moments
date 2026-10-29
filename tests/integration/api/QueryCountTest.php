@@ -20,9 +20,10 @@ class QueryCountTest extends MomentsTestCase
         $db = $this->database();
         $users = [2, 3, 4, 5];
 
+        $ids = [];
         for ($i = 1; $i <= 20; $i++) {
-            $id = $this->create($users[$i % 4], [
-                'content' => "Moment $i with #topic$i, thanks @normal and @follower, see http://localhost/moments/1 and http://localhost/u/stranger",
+            $ids[$i] = $id = $this->create($users[$i % 4], [
+                'content' => "Moment $i with #topic$i, thanks @normal and @follower, see http://localhost/moments/".($ids[1] ?? 1)." and http://localhost/u/stranger",
             ]);
             $db->table('moments_media')->insert([
                 ['entry_id' => $id, 'user_id' => $users[$i % 4], 'kind' => 'image', 'source' => 'local', 'url' => "http://localhost/assets/moments/a$i.webp", 'position' => 0, 'created_at' => $now],
@@ -36,7 +37,7 @@ class QueryCountTest extends MomentsTestCase
 
         // Reposts of earlier moments, with and without a comment.
         for ($i = 1; $i <= 6; $i++) {
-            $this->create(3, $i % 2 ? ['repostOf' => $i] : ['repostOf' => $i, 'content' => "Quote $i"]);
+            $this->create(3, $i % 2 ? ['repostOf' => $ids[$i]] : ['repostOf' => $ids[$i], 'content' => "Quote $i"]);
         }
     }
 
