@@ -194,4 +194,27 @@ class PrivacyTest extends MomentsTestCase
         // Bookmarking what you can't see is a 404, not a bookmark.
         $this->assertSame(404, $this->send($this->request('POST', '/api/moments/'.$this->ids['private'].'/bookmark', ['authenticatedAs' => 3]))->getStatusCode());
     }
+
+    #[Test]
+    public function replies_to_a_hidden_moment_hide_with_it(): void
+    {
+        $root = $this->create(2, ['content' => 'About to be hidden']);
+        $reply = $this->create(3, ['content' => 'A reply by the follower', 'parentId' => $root]);
+        $link = $this->create(4, ['content' => 'See http://localhost/moments/'.$reply]);
+
+        $patch = $this->send($this->request('PATCH', '/api/moments/'.$root, ['authenticatedAs' => 5, 'json' => ['isHidden' => true]]));
+        $this->assertSame(200, $patch->getStatusCode());
+
+        // A stranger can no longer reach the reply by its id: no reaction, bookmark, report or link card.
+        foreach (['reaction' => ['reaction' => 'heart'], 'bookmark' => [], 'reports' => ['reason' => 'spam']] as $path => $body) {
+            $status = $this->send($this->request('POST', "/api/moments/$reply/$path", ['authenticatedAs' => 4, 'json' => $body]))->getStatusCode();
+            $this->assertSame(404, $status, "$path on a reply under a hidden moment");
+        }
+        $this->assertSame([], $this->json($this->get('/api/moments/'.$link, 4))['data']['embeds']);
+
+        // The moment's author and moderators still see the thread.
+        foreach ([2, 5] as $as) {
+            $this->assertSame([$reply], array_column($this->json($this->get('/api/moments/'.$root.'/replies', $as))['data'], 'id'), "user $as");
+        }
+    }
 }

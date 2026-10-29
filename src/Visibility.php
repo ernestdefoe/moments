@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Builder;
  *
  * A reply carries its moment's privacy and author (`audience_user_id`), so it
  * is seen by exactly the people who can see the moment. Hidden moments are
- * seen by their author and moderators.
+ * seen by their author and moderators, and so are the replies under them.
  *
  * Registered as the model's visibility scoper, so core's notification list
  * drops a notification whose moment its reader can no longer see.
@@ -82,9 +82,27 @@ class Visibility
                     $q->orWhere("$table.user_id", $actor->id);
                 }
             });
+
+            // A reply hides with its moment: only the moment's author (and
+            // moderators) still see it. One indexed subquery, no extra query.
+            $query->where(function (Builder $q) use ($actor, $table) {
+                $q->whereNull("$table.root_id")
+                    ->orWhereNotIn("$table.root_id", fn ($s) => $s->select('id')->from('moments_entries')->whereNotNull('hidden_at'));
+                if (! $actor->isGuest()) {
+                    $q->orWhere("$table.audience_user_id", $actor->id);
+                }
+            });
         }
 
         return $query;
+    }
+
+    /** @var array<int, bool> root id => hidden, asked once per root (canSee runs per recipient) */
+    protected array $hiddenRoots = [];
+
+    protected function rootHidden(int $rootId): bool
+    {
+        return $this->hiddenRoots[$rootId] ??= Entry::query()->whereKey($rootId)->whereNotNull('hidden_at')->exists();
     }
 
     /** The same rule for one loaded row. */
@@ -98,6 +116,10 @@ class Visibility
         $mine = ! $actor->isGuest() && $entry->audience_user_id === $actor->id;
 
         if ($entry->hidden_at !== null && ! $moderator && $entry->user_id !== $actor->id) {
+            return false;
+        }
+
+        if (! $moderator && ! $mine && ! $entry->isRoot() && $this->rootHidden((int) $entry->root_id)) {
             return false;
         }
 
