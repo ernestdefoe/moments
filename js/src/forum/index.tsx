@@ -7,6 +7,7 @@ import UserPageResolver from 'flarum/forum/resolvers/UserPageResolver';
 import Moment from './models/Moment';
 import { notificationIcons, notificationTypes } from './notifications';
 import registerWidgets from './widgets';
+import registerSearch from './search';
 import { t } from './util';
 
 /*
@@ -59,4 +60,5 @@ app.initializers.add('ernestdefoe-moments', () => {
   });
 
   registerWidgets();
+  registerSearch();
 });

@@ -153,6 +153,21 @@
     flex-wrap: wrap;
     margin: 0;
   }
+  .TextEditor-controls > li {
+    min-width: 0;
+    max-width: 100%;
+  }
+  // On a phone the buttons scroll in one row instead of leaving one alone on a second line.
+  @media @phone {
+    .TextEditor-controls,
+    .TextEditor-toolbar {
+      flex-wrap: nowrap;
+    }
+    .TextEditor-toolbar {
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+  }
 }
 .MomentComposer.is-active .TextEditor-editor {
   min-height: 84px;
@@ -988,4 +1003,13 @@
   .MomentLightbox-nav {
     display: none;
   }
+}
+
+// ── Search dropdown ─────────────────────────────────────────────────────────
+
+.MomentsSearchResult > a {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

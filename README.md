@@ -4,7 +4,7 @@
 
 Discussions are for conversations. Moments are for everything smaller: a photo from the weekend, a quick update on what you're building, a voice note, a GIF, a thought you don't want to start a whole thread for. Your members get a timeline beside your discussions, and a Moments tab on every profile.
 
-![The Moments feed](screenshots/feed-desktop.png)
+![The Moments feed](screenshots/feed.jpg)
 
 ## What it does
 
@@ -18,13 +18,13 @@ Discussions are for conversations. Moments are for everything smaller: a photo f
 - **@mentions** that notify, and **#topics** with their own feed, plus trending topics at the top of the page.
 - **Link cards.** Paste a link to a discussion, a post, a member or another moment on your forum and it becomes a card. Links to other sites stay plain links.
 - **Privacy on each moment:** Everyone, Followers only, or Only me. Replies follow their moment.
-- **Search** across moments, by words or by `#topic`.
+- **Search** across moments, by words or by `#topic`, on the Moments page and in the forum's own search.
 - **Notifications** for mentions, replies, reposts and reactions (reactions are batched into one per moment), by alert and, for mentions and replies, by email. Each type can be turned off in your settings.
 - **Moderation:** hide, delete, lock replies, and a Reported tab for moderators with every report and a button to dismiss them.
 - **Widgets** for latest moments, popular topics and a "post a moment" box.
 - **Share links** with proper previews: a public moment's own page carries its text and first photo for link previews.
 
-![A thread on a phone](screenshots/thread-phone.png)
+![The feed on a phone](screenshots/feed-phone.jpg)
 
 ## Install
 

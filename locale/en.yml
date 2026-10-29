@@ -35,6 +35,10 @@ ernestdefoe-moments:
   forum:
     nav: Moments
 
+    search:
+      heading: Moments
+      all: 'Search all moments for "{query}"'
+
     page:
       title: Moments
       moment_title: "{name}'s moment"
